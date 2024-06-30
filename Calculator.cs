@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Byndyusoft_test_calculator
 {
@@ -10,7 +9,7 @@ namespace Byndyusoft_test_calculator
         /// </summary>
         /// <param name="RPN">Очередь с обратной польской записью</param>
         /// <returns>Результат расчета с плавающей точкой</returns>
-        public double Calculate(Queue<Token> RPN)
+        public double Calculate(Queue<Token> RPN, Library library)
         {
             Stack<double> stack = new Stack<double>();
 
@@ -19,7 +18,7 @@ namespace Byndyusoft_test_calculator
             foreach (var token in RPN)
             {
                 string str = token.GetStr();
-                switch (token.GetType())
+                switch (token.GetTokenType())
                 {
                     case Token.Type.Int:
                     case Token.Type.Float:
@@ -30,12 +29,17 @@ namespace Byndyusoft_test_calculator
                         switch (token.GetAsc())
                         {
                             case Token.OperatorAssociativity.Left:
-                                double[] buf = GetTwoTokens(stack);
-                                if (str == "+") res = buf[0] + buf[1];
-                                else if (str == "-") res = buf[1] - buf[0];
-                                else if (str == "*") res = buf[0] * buf[1];
-                                else if (str == "/") res = buf[1] / buf[0];
-                                else if (str == "^") res = Math.Pow(buf[0], buf[1]);
+
+                                double[] buffer = GetTwoTokens(stack);
+
+                                if (library.Ops.ContainsKey(str))
+                                {
+                                    res = library.Ops[str](buffer[1], buffer[0]);
+                                }
+                                else
+                                {
+                                    Printer.Error();
+                                }
                                 break;
 
                             case Token.OperatorAssociativity.Right:
@@ -47,15 +51,16 @@ namespace Byndyusoft_test_calculator
                         break;
 
                     case Token.Type.Function:
-                        if (str == "log")
+
+                        double[] buf = GetTwoTokens(stack);
+
+                        if (library.Funcs.ContainsKey(str))
                         {
-                            double[] buf = GetTwoTokens(stack);
-                            res = Math.Log(buf[1]) / Math.Log(buf[0]);
+                            res = library.Funcs[str](buf[0], buf[1]);
                         }
                         else
-                        {
-                            // Add more functions as needed
-                        }
+                            Printer.Error();
+
                         stack.Push(res);
                         break;
                 }

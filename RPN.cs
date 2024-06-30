@@ -19,7 +19,7 @@ namespace Byndyusoft_test_calculator
 
             foreach (var token in tokens)
             {
-                switch (token.GetType())
+                switch (token.GetTokenType())
                 {
                     case Token.Type.Int:
                     case Token.Type.Float:
@@ -32,7 +32,7 @@ namespace Byndyusoft_test_calculator
                     case Token.Type.Operator:
                         if (stack.Count > 0)
                         {
-                            while (stack.Peek().GetType() == Token.Type.Operator &&
+                            while (stack.Peek().GetTokenType() == Token.Type.Operator &&
                                    ((stack.Peek().GetPrecendance() > token.GetPrecendance()) ||
                                    (stack.Peek().GetPrecendance() == token.GetPrecendance() 
                                    && token.GetAsc() == Token.OperatorAssociativity.Left)))
@@ -46,19 +46,19 @@ namespace Byndyusoft_test_calculator
                         break;
                     case Token.Type.R_Parenthesis:
 
-                        while (stack.Peek().GetType() != Token.Type.L_Parenthesis)
+                        while (stack.Peek().GetTokenType() != Token.Type.L_Parenthesis)
                         {
                             fromStackToQueue();
                         }
 
                         stack.Pop();
 
-                        if (stack.Count > 0 && stack.Peek().GetType() == Token.Type.Function)
+                        if (stack.Count > 0 && stack.Peek().GetTokenType() == Token.Type.Function)
                             fromStackToQueue();
                         break;
                     case Token.Type.Separator:
 
-                        while (stack.Peek().GetType() != Token.Type.L_Parenthesis)
+                        while (stack.Peek().GetTokenType() != Token.Type.L_Parenthesis)
                         {
                             fromStackToQueue();
                         }

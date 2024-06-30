@@ -8,13 +8,16 @@ namespace Byndyusoft_test_calculator
         /// Проверка входной строки на наличие некорректных символов
         /// </summary>
         /// <param name="value">Входная строка?которую необходимо проверить<param>
-        public bool Check(string value)
+        public bool Check(string value, Library library)
         {
             if (IsValid(value) == false)
                 return false;
 
+            if (string.IsNullOrEmpty(value) == true)
+                return false;
+
             //Соответствие любому символу, которого нет в данной символьной группе
-            string pattern = @"[^\d(*/+-., )]";
+            string pattern = $@"[^\d{library.Ops.Keys}(., )a-z]";
             Regex regex = new Regex(pattern);
             var matches = regex.Matches(value);
             if (matches.Count != 0)

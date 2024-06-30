@@ -20,12 +20,18 @@ namespace Byndyusoft_test_calculator
         /// </summary>
         /// <param name="value">Входная строка с математическим выражением</param>
         /// <returns>Список токенов</returns>
-        public static List<Token> GetTokens(string value)
+        public static List<Token> GetTokens(string value, Library library)
         {
+            
             State state = State.S0;
             List<Token> tokens = new List<Token>();
 
-            string validOperators = "+-*^/";
+            string validOperators = string.Empty;
+
+            foreach (var key in library.Ops.Keys)
+            {
+                validOperators += key;
+            }
 
             bool isDigit, isLetter, isOp, isParanth, isPoint, isSep, isLParanth, isRParanth;
 
@@ -92,7 +98,7 @@ namespace Byndyusoft_test_calculator
                 {
                     if (isOp)
                     {
-                        if (tokens.Count == 0 || tokens[tokens.Count - 1].GetType() == Token.Type.L_Parenthesis)
+                        if (tokens.Count == 0 || tokens[tokens.Count - 1].GetTokenType() == Token.Type.L_Parenthesis)
                             tokens.Add(new Token(s.ToString(), Token.Type.Operator, Token.OperatorAssociativity.Right));
                         else
                             tokens.Add(new Token(s.ToString(), Token.Type.Operator, Token.OperatorAssociativity.Left));
@@ -113,6 +119,14 @@ namespace Byndyusoft_test_calculator
                         tokenize_Op_Paranth_Sep();
                         break;
                     case State.S2: case State.S3: case State.S4:
+
+                        if(!string.IsNullOrEmpty(buffer) && bufferTokenType == Token.Type.Function && isDigit == true)
+                        {
+                            tokens.Add(new Token(buffer, bufferTokenType));
+                            buffer = string.Empty;
+                            state = State.S2;
+                        }
+
                         buffer += s;
                         break;
                     case State.S5:

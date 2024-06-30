@@ -79,7 +79,7 @@ namespace Byndyusoft_test_calculator
             }
         }
 
-        public Type GetType() { return _type; }
+        public Type GetTokenType() { return _type; }
         public OperatorAssociativity GetAsc() { return _opAsc; }
         public string GetStr() { return _str; }
     }

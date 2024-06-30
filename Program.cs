@@ -6,31 +6,32 @@ namespace Byndyusoft_test_calculator
     {
         static void Main(string[] args)
         {
-            Printer printer = new Printer();
             CheckString checkString = new CheckString();
             RPN rpn = new RPN();
             Calculator calculator = new Calculator();
+            Library library = new Library();
+            library.AddOperation("%", (x, y) => x % y);
 
-            for(; ; )
+            for (; ; )
             {
                 string intro = "Введите выражение:";
-                printer.Print(intro);
+                Printer.Print(intro);
                 string input = Console.ReadLine();
 
-                if(checkString.Check(input) == false)
+                if(checkString.Check(input, library) == false)
                 {
-                    printer.DelayPrint("Ошибка ввода, попробуйте еще раз!");
+                    Printer.DelayPrint("Ошибка ввода, попробуйте еще раз!");
                     Console.Clear();
                     continue;
                 }
 
-                var tokens = TokenFactory.GetTokens(input.Replace(" ", ""));
+                var tokens = TokenFactory.GetTokens(input.Replace(" ", ""), library);
                 
                 var queue = rpn.GetRPN(tokens);
 
-                var output = "Результат: " + calculator.Calculate(queue);
+                var output = "Результат: " + calculator.Calculate(queue, library);
 
-                printer.DelayPrint(output);
+                Printer.DelayPrint(output);
                 Console.Clear();
             }
         }
